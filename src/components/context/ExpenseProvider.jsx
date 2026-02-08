@@ -1,23 +1,17 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { ExpenseContext } from "./ExpenseContext";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const ExpenseProvider = ({ children }) => {
     const STORAGE_KEY = 'Expences';
 
-    const [allExpenses, setAllExpenses] = useState(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [allExpenses, setAllExpenses] = useLocalStorage(STORAGE_KEY,[])
     const [filterType, setFilterType] = useState('all');
 
     const addExpense = (newItem) => {
 
         setAllExpenses(prevItem => [...prevItem, newItem])
     }
-
-    useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allExpenses));
-    }, [allExpenses]);
 
     const handleChange = (event) => {
 
