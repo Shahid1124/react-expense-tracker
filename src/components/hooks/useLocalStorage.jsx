@@ -1,17 +1,32 @@
 import { useState, useEffect } from "react";
 
- const useLocalStorage = (key, initialValue) => {
+const useLocalStorage = (key, initialValue) => {
     const [storageData, setStorageData] = useState(() => {
-        const savedData = localStorage.getItem(key);
+        try {
 
-        return savedData ? JSON.parse(savedData) : initialValue
+            if (typeof window === 'undefined') {
+                return initialValue;
+            }
+            const savedData = localStorage.getItem(key);
+
+            return savedData ? JSON.parse(savedData) : initialValue
+        } catch (error) {
+            console.warn('Local storage is not available or access is denied:', error);
+            return initialValue;
+        }
+
     });
 
     useEffect(() => {
-        localStorage.setItem(key, JSON.stringify(storageData));
+        try {
+            localStorage.setItem(key, JSON.stringify(storageData));
+        } catch (error) {
+            console.warn('Local storage is not available or access is denied:', error);
+        }
+
     }, [key, storageData])
 
     return [storageData, setStorageData]
- }
+}
 
- export default useLocalStorage;
+export default useLocalStorage;
